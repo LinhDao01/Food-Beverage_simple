@@ -1,0 +1,335 @@
+# Common references
+components:
+  schemas:
+    Restaurant:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true # Returned by HTTP GET
+        name:
+          type: string
+          description: restaurant name
+        address:
+          type: string
+          description: restaurant address
+        phone:
+          type: string
+          description: restaurant phone number
+        note:
+          type: string
+          description: notes about restaurant
+        avatar:
+          type: string
+          readOnly: true #Returned by HTTP GET
+          description: restaurant avatar file path
+        avatarFile:
+          type: string
+          format: binary
+          writeOnly: true #Used in POST/PUT/PATCH
+          description: restaurant avatar file
+
+    Orders:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true # Returned by HTTP GET
+          description: order id
+        id_restaurant:
+          type: integer
+          description: restaurant id
+        id_user:
+          type: integer
+          description: order of user with user id
+        name_receiver:
+          type: string
+          description: receiver name
+        phone_receiver:
+          type: string
+          description: receiver phone number
+        address_detail:
+          type: string
+          description: delivery address
+        total:
+          type: integer
+          description: total amount of money
+        paid:
+          type: integer
+          enum:
+            - Yes
+            - No
+          description: Have the customer paid or not?
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the order was created.
+    Dishes:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true # Returned by HTTP GET
+          description: dish id
+        name:
+          type: string
+          description: dish name
+          required: true
+        image:
+          type: string
+          readOnly: true #Returned by HTTP GET
+          description: dish image file path
+        dishImage:
+          type: string
+          format: binary
+          writeOnly: true #Used in POST/PUT/PATCH
+          description: dish image file
+        price:
+          type: integer
+          description: the price of a dish
+          minimum: 0
+        note:
+          type: string
+          description: dish note or introduction
+        restaurantId:
+          type: integer
+          description: restaurant id
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          description: username
+        email:
+          type: string
+          format: email
+          description: user email
+        pass:
+          type: string
+          description: enter password
+        phone:
+          type: string
+          description: contact phone number
+        address_detail:
+          type: string
+          description: contact address
+        province:
+          type: string
+          description: contact province
+        district:
+          type: string
+          description: enter district
+        role:
+          type: string
+          enum: [0, 1]
+          default: 1
+          description: role 1 - user
+        avatar:
+          type: string
+          readOnly: true
+          description: user avatar file path
+        avatarFile:
+          type: string
+          format: binary
+          writeOnly: true # used in POST/PUT/PATCH
+          description: user avatar file      
+
+    PaginationMetadata:
+      type: object
+      properties:
+        totalRecords:
+          type: integer
+          default: 0
+          description: The total number of records
+        firstPage:
+          type: integer
+          default: 1
+          description: The first page
+        lastPage:
+          type: integer
+          default: 1
+          description: The last page
+        page:
+          type: integer
+          default: 1
+          description: The current page
+        limit:
+          type: integer
+          default: 5
+          description: The number of records per page
+
+  responses:
+    "200NoData":
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - success
+              data:
+                type: object
+                nullable: true
+                default: null
+                description: The response data
+    "201DishCreated":
+      description: New dish created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - success
+              data:
+                type: object
+                properties:
+                  new_dish:
+                    $ref: "#/components/schemas/Dishes"
+    "404NotFound":
+      description: Object not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - error
+              message:
+                type: string
+                description: Error message
+                example: Couldn't find any information
+    400BadRequest:
+      description: Missing or invalid input value
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - error
+              message:
+                type: string
+                description: Error message
+                example: Missing required or invalid input value
+
+    "500InternalServerError":
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - error
+              message:
+                type: string
+                description: A description of what went wrong on the server
+                example: An internal server error occurred
+                
+    "500InternalError":
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: The response status
+                enum:
+                  - error
+              message:
+                type: string
+                description: A description of what went wrong on the server
+                example: An internal server error occurred
+            
+
+  parameters:
+    userIdParam:
+      name: userId
+      description: User ID, to retrieve his/her related information
+      required: true
+      in: path
+      schema:
+        type: integer
+    userId:
+      name: id
+      description: User ID
+      required: true
+      in: path
+      schema:
+        type: integer
+    orderIdParam:
+      name: orderId
+      description: Order ID, to retrieve the specific order information
+      required: true
+      in: path
+      schema:
+        type: integer
+    orderStatusParam:
+      name: status
+      description: New status for the order
+      required: true
+      in: query
+      schema:
+        type: string
+        enum:
+            - wait
+            - progress
+            - deliver
+            - finish
+            - cancel
+        default: wait
+    restaurantIdParam:
+      name: restaurantId
+      description: Restaurant ID, to retrieve related information
+      required: true
+      in: path
+      schema:
+        type: integer
+    dishIdParam:
+      name: dishId
+      description: Dish ID, to retrieve related information
+      required: true
+      in: path
+      schema:
+        type: integer
+    limitParam:
+      name: limit
+      description: Number of records per page
+      in: query
+      schema:
+        type: integer
+        default: 5
+        minimum: 1
+        maximum: 100
+      required: false
+    pageParam:
+      name: page
+      description: Page number of records
+      in: query
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      required: false
