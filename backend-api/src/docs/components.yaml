@@ -108,9 +108,11 @@ components:
           type: string
           format: email
           description: user email
+          example: "test@gmail.com"
         pass:
           type: string
           description: enter password
+          example: your_password
         phone:
           type: string
           description: contact phone number
@@ -136,7 +138,23 @@ components:
           type: string
           format: binary
           writeOnly: true # used in POST/PUT/PATCH
-          description: user avatar file      
+          description: user avatar file     
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email for login.
+          example: "test@gmail.com" 
+        password:
+          type: string
+          description: The password for login.
+          example: "your_password" 
+      required:
+        - email
+        - password
 
     PaginationMetadata:
       type: object

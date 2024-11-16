@@ -2,6 +2,7 @@ const knex = require("../database/knex");
 const Paginator = require("./paginator");
 const { unlink } = require("node:fs");
 const ApiError = require("../api-err");
+const bcrypt = require("bcryptjs");
 
 function userRepository() {
   return knex("users");
@@ -23,17 +24,38 @@ function readUser(payload) {
 }
 
 async function createUser(payload) {
-  // console.log("Payload received:", payload);
   const user = readUser(payload);
-  // console.log("User object:", user);
+
+  const hashPass = await bcrypt.hash(payload.pass, 10);
+  user.pass = hashPass;
+
   const [id] = await userRepository().insert(user);
-  // console.log("Inserted User ID:", id);
   return { id, ...user };
+}
+
+async function login(email, password) {
+  try {
+    const userLogin = await userRepository()
+    .where("email", email)
+    .first();
+
+    return userLogin;
+  } catch (error) {
+    new ApiError(500, "An error occured while finding user");
+  }
 }
 
 // get 1 user by id
 async function getUserByID(id) {
-  return contactRepository().where("id", id).select("*").first();
+  return userRepository().where("id", id).select("*").first();
+}
+
+//get user by email and phone to check if they duplicate or not
+async function getUser(email, phone) {
+  return userRepository()
+    .where("email", email)
+    .orWhere("phone", phone)
+    .first();
 }
 
 async function updateUserInfo(id, payload) {
@@ -100,6 +122,8 @@ async function deleteUser(id) {
 // Define
 module.exports = {
   createUser,
+  login,
+  getUser,
   getUserByID,
   updateUserInfo,
   readUser,

@@ -7,10 +7,10 @@ const router = express.Router();
 
 module.exports.setup = (app) => {
   app.use("/api/v1/users", router);
-
+  //signup
   /**
    * @swagger
-   * /api/v1/users:
+   * /api/v1/users/signup:
    *   post:
    *     summary: Create a new user
    *     description: Create a new user
@@ -44,7 +44,48 @@ module.exports.setup = (app) => {
    *       '500':
    *           $ref: '#/components/responses/500InternalError'
    */
-  router.post("/", avatarUpload, usersController.createUser);
+  router.post("/signup", avatarUpload, usersController.createUser);
+
+  //login
+  /**
+   * @swagger
+   * /api/v1/users/login:
+   *   post:
+   *     summary: Log in
+   *     description: Log in with email and password
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/LoginRequest'
+   *     tags:
+   *       - users
+   *     responses:
+   *       '201':
+   *         description: Login successfully!
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   description: The response status
+   *                   enum: [success]
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     user:
+   *                       $ref: '#/components/schemas/LoginRequest'
+   *       '400':
+   *           $ref: '#/components/responses/400BadRequest'
+   *       '500':
+   *           $ref: '#/components/responses/500InternalError'
+   */
+  router.post("/login", usersController.login);
+  //logout
+  router.post("/logout", usersController.logout);
   router.all("/", methodNotAllowed);
 
   /**

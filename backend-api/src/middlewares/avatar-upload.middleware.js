@@ -34,23 +34,3 @@ function avatarUpload(req, res, next) {
 }
 
 module.exports = avatarUpload;
-
-// function getManyContacts(query) {
-//   const { name, favorite } = query;
-//   return contactRepository()
-//     .where((builder) => {
-//       if (name) {
-//         builder.where("name", "like", `%${name}%`);
-//       }
-//       if (favorite !== undefined && favorite !== "0" && favorite !== "false") {
-//         builder.where("favorite", 1);
-//       }
-//     })
-//     .select("*");
-// }
-
-// module.exports = {
-//     createContact,
-//     getManyContacts
-// }
-

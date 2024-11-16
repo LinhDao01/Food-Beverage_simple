@@ -1,10 +1,7 @@
 <script setup>
     import { ref } from 'vue';
-    import { useRouter, useRoute } from 'vue-router';
     import SignUp from '@/components/SignUp.vue';
-    import userService from '@/services/users.service';
     
-    const router = useRouter();
     const message = ref('');
     const user = ref({
         name: '',
@@ -13,18 +10,9 @@
         address_detail: '', 
         district: '', 
         province: '',
-        phone: ''
+        phone: '',
+        role: 1
     })
-
-    async function onCreateUser(newUser) {
-        try {
-            await userService.createUser(newUser);
-            message.value = 'Tạo tài khoản thành công.';
-        } catch (error) {
-            console.log(error);
-            message.value = 'Có lỗi xảy ra khi tạo tài khoản.';
-        }
-    }
 
 </script>
 
@@ -43,10 +31,7 @@
         </div>
         <SignUp 
             :user="user"
-            @submit:user="onCreateUser"    
         />
-        
-        <p>{{ message }}</p>
 
     </div>
 </template>

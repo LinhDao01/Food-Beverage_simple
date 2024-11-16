@@ -1,13 +1,16 @@
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref } from 'vue';
     import { Form, Field, ErrorMessage } from 'vee-validate';
     import { toTypedSchema } from '@vee-validate/zod';
     import { z } from 'zod';
+    import { useUserStore } from '@/stores/user.store';
+    import userService from '@/services/users.service';
+    import router from '@/router';
 
     const props = defineProps({
         user: { 
             type: Object, 
-            // required: true,
+            required: true,
             default: () => ({
                 name: '',
                 email: '',
@@ -20,46 +23,68 @@
         },
     });
 
-    const avatarFileInput = ref(null);
-    const avatarFile = ref(props.user?.avatar || '');
-
     const $emit = defineEmits(['submit:user']);
 
     let validationSchema = toTypedSchema(
         z.object({
             name: z.string()
-                .min(2, { message: 'Tên tối thiểu 2 ký tự.' })
-                .max(50, { message: 'Tên tối đa 50 ký tự.' }),
+                .min(2, { message: 'Tên tối thiểu 2 ký tự' })
+                .max(50, { message: 'Tên tối đa 50 ký tự' }),
             email: z.string()
                 .email({ message: 'Email không đúng.' })
-                .max(50, { message: 'Email tối đa 50 ký tự.' }),
+                .max(50, { message: 'Email tối đa 50 ký tự' }),
             pass: z.string()
                 .min(8, { message: 'Mật khẩu tối thiểu 8 ký tự' })
-                .max(50, { message: 'Mật khẩu tối đa 50 ký tự.' }),
+                .max(50, { message: 'Mật khẩu tối đa 50 ký tự' }),
             address_detail: z.string()
-                .max(100, { message: 'Địa chỉ tối đa 100 ký tự.' }),
+                .min(1, { message: 'Vui lòng nhập địa chỉ cụ thể' }),
             district: z.string()
-                .max(100, { message: 'Quận/huyện tối đa 100 ký tự.' }),
+                .min(1, { message: 'Vui lòng nhập Quận/Huyện' }),
             province: z.string()
-                .max(100, { message: 'Tỉnh/Thành phố tối đa 100 ký tự.' }),
+                .min(1, { message: 'Vui lòng nhập Tỉnh/Thành phố' }),
             phone: z.string()
                 .regex(
                     /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/g,
                     { message: 'Số điện thoại không hợp lệ.' }
                 ),
-            avatarFile: z.instanceof(File).optional(),
         })
     );
 
-    function submitUser(values) {
+    async function submitUser(values) {
         let formData = new FormData();
         for (let key in values) {
             if (values[key] !== undefined) {
                 formData.append(key, values[key]);
             }
-        } 
+        }
+        try {
+            const response = await userService.createUser(formData);  // Gọi API tạo tài khoản
+            alert('Tạo tài khoản thành công!');
+            console.log('User response:', response);
 
-        $emit('submit:user', formData);
+            const { user, token } = response;
+            const userResponse = {
+                email: user.email,
+                token: token,
+                role: user.role // Assuming default non-admin role
+                };
+            // Cập nhật trạng thái đăng nhập trong store
+            const userStore = useUserStore();
+            userStore.loggedIn(userResponse);  // Đăng nhập người dùng tự động
+
+            router.push('/');  // Chuyển hướng đến trang chủ sau khi đăng nhập thành công
+        } catch (error) {
+            console.log(error);
+            
+            if (error.message.includes('Email đã được sử dụng. Vui lòng chọn email khác.')) {
+                alert('Email đã được sử dụng. Vui lòng chọn email khác!');
+            } else if (error.message.includes('Số điện thoại đã được sử dụng. Vui lòng chọn số khác.')) {
+                alert('Số điện thoại đã được sử dụng. Vui lòng chọn số khác!');
+            } else {
+                alert('Có lỗi xảy ra khi tạo tài khoản. Vui lòng thử lại sau!');
+            }
+        }
+        // $emit('submit:user', formData);
     }
 </script>
 

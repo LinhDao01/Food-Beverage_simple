@@ -1,3 +1,18 @@
+<script setup>
+    import { useRouter, useRoute } from 'vue-router';
+    import { useUserStore } from '@/stores/user.store';
+    
+
+    const router = useRouter();
+    const userStore = useUserStore();
+
+    function handleLogout() {
+        userStore.logout();
+        router.push({ name: 'Home' });
+    } 
+    
+</script>
+
 <template>
     <nav class="navbar navbar-expand bg-dark" data-bs-theme="dark">
         <div class="container-fluid">
@@ -15,6 +30,11 @@
                     <i class="fa-solid fa-house"></i>
                     </router-link>
                 </li>
+            </div>
+            <div v-if="userStore.isLoggedIn">
+                <button @click="handleLogout" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
             </div>
         </div>
     </nav>

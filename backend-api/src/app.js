@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const JSend = require("./jsend");
 const restaurantRouter = require("./routes/restaurant.router");
 const dishesRouter = require("./routes/dishes.router");
-const userRouter = require("./routes/user.router")
-
+const userRouter = require("./routes/user.router");
 
 const {
   resourceNotFound,
@@ -15,9 +15,15 @@ const { specs, swaggerUi } = require("./docs/swagger");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend chạy ở cổng 5173
+    credentials: true, // nếu bạn cần gửi cookie
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //SECTION - Endpoint
 app.get("/", (req, res) => {
@@ -28,7 +34,7 @@ app.use("/public", express.static("public"));
 
 restaurantRouter.setup(app);
 dishesRouter.setup(app);
-userRouter.setup(app)
+userRouter.setup(app);
 
 app.use(resourceNotFound);
 app.use(handleError);

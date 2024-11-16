@@ -37,11 +37,21 @@ function userService() {
   }
   
   async function createUser(user) {
-    return efetch(baseUrl, {
+    return efetch(`${baseUrl}/signup`, {
       method: 'POST',
       body: user
     });
   } 
+
+  async function login(email, password) {
+    return efetch(`${baseUrl}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+  }
 
   async function updateUser(id, user) {
     return efetch(`${baseUrl}/${id}`, {
@@ -58,6 +68,7 @@ function userService() {
 
   return {
     fetchUser,
+    login,
     createUser,
     updateUser,
     deleteUser

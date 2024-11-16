@@ -141,7 +141,7 @@ CREATE TABLE `users` (
   `address_detail` varchar(255) NOT NULL,
   `province` varchar(100) NOT NULL,
   `district` varchar(100) NOT NULL,
-  `role` enum('0','1') NOT NULL,
+  `role` enum('0','1') NOT NULL default '1',
   `avatar` varchar(255), 
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_user_UNIQUE` (`email`),
@@ -173,5 +173,20 @@ CREATE TABLE `users` (
 insert into users (name, email, pass, phone, address_detail, province, district, role)
 values("Neko", "neko@gmail.com", "1", "0462436543", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
 
+insert into users (name, email, pass, phone, address_detail, province, district, role)
+values("avatar", "avatar@gmail.com", "1", "0462432243", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
+insert into users (name, email, pass, phone, address_detail, province, district, role)
+values("big", "big@gmail.com", "1", "0462435443", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
+insert into users (name, email, pass, phone, address_detail, province, district, role)
+values("litle", "litle@gmail.com", "1", "0462436573", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
+insert into users (name, email, pass, phone, address_detail, province, district, role)
+values("height", "height@gmail.com", "1", "046226543", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
+insert into users (name, email, pass, phone, address_detail, province, district, role)
+values("Huy", "huy@gmail.com", "0", "046226555", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu", "1");
+insert into users (name, email, pass, phone, address_detail, province, district)
+values("hana", "hana@gmail.com", "0", "046224455", "123 Nguyen Van Cu", "An Khanh", "Ninh Kieu");
+drop table users;
 -- select
 select * from users;
+select * from dishes;
+select * from restaurant;
